@@ -14,24 +14,24 @@ function Add-SCCMChocoApplication
     Add-SCCMChocoApplication -chocourl "https://chocolatey.org/packages/Firefox"
 
     .EXAMPLE
-    Add Chocolatey package to SCCM Software Library and deploy to user collection
     Add-SCCMChocoApplication -chocourl "https://chocolatey.org/packages/Firefox" -CMUserCollectionName "All Users"
+    # Add Chocolatey package to SCCM Software Library and deploy to user collection
 
     .EXAMPLE
-    Add Chocolatey package to SCCM Software Library and deploy to device collection
     Add-SCCMChocoApplication -chocourl "https://chocolatey.org/packages/Firefox" -CMDeviceCollectionName "All Users"
+    # Add Chocolatey package to SCCM Software Library and deploy to device collection
 
     .EXAMPLE
-    Add Chocolatey package to SCCM Software Library and deploy to user collection
     Add-SCCMChocoApplication -chocourl "https://chocolatey.org/packages/Firefox" -CMUserCollectionName "All Users"
+    # Add Chocolatey package to SCCM Software Library and deploy to user collection
 
     .EXAMPLE
-    Add Chocolatey package to SCCM Software Library, deploy to user collection, save icon in shared folder
     Add-SCCMChocoApplication -chocourl "https://chocolatey.org/packages/Firefox" -CMUserCollectionName "All Users" -IconsDir "\\SCCMSRV\CMSOURCE\Choco\Icons"
+    # Add Chocolatey package to SCCM Software Library, deploy to user collection, save icon in shared folder
 
     .EXAMPLE
-    Add Chocolatey package to SCCM Software Library, specify location of SCCM console and SiteCode
     Add-SCCMChocoApplication -chocourl "https://chocolatey.org/packages/Firefox" -CMInstallDir "C:\Microsoft Configuration Manager\" - CMSiteCode "TST"
+    # Add Chocolatey package to SCCM Software Library, specify location of SCCM console and SiteCode
      
     .NOTES
     You must have SCCM console installed on your computer. On first run you will be asked to configure NuGet and Chocolatey repository (but don't be afraid, we will do it fo you). Make sure you have PowerShell Gallery installed (https://msdn.microsoft.com/en-us/powershell/gallery/readme)
@@ -65,6 +65,7 @@ function Add-SCCMChocoApplication
 
     #region prereqcheck
     Write-Host "Checking if Chocolatey repository is configured: " -NoNewline
+
     #Register Choco repository if not registered
     if ((Get-PSRepository "Chocolatey" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).count -eq 0)
     {   
@@ -102,7 +103,7 @@ function Add-SCCMChocoApplication
     }
     else
     {
-        if ($CMInstallDir -ne $null)
+        if ($CMInstallDir.Length -gt 0)
         {
             $psdmodulepath = Join-Path -Path $CMInstallDir -ChildPath "AdminConsole\bin\ConfigurationManager.psd1"
         }
@@ -127,11 +128,12 @@ function Add-SCCMChocoApplication
         }
     }
 
-    #test if already in SCCM context
+    #test if already in SCCM context, switch context
     Write-Host "Connecting to SCCM site: " -NoNewline
     $location = Get-Location
     if ($location.Provider.Name -eq "CMSite")  
     {
+       $CMSiteCode = (Get-Location).Drive.Name
        Write-Host "Already connected" -ForegroundColor Green; 
     }
     elseif($CMSiteCode -eq $null)
@@ -153,7 +155,62 @@ function Add-SCCMChocoApplication
         
     }
 
+    #check if folder for Chocolatey applications exists
 
+    $CMFolderPath = Join-Path ($CMSiteCode + ":\Application") -ChildPath $CMFolderName
+    Write-Host ("Checking SCCM Folder '" + $CMFolderPath + "' ") -NoNewline
+    if (Test-Path $CMFolderPath)
+    {
+        Write-Host "OK" -ForegroundColor Green
+    }
+    elseif ($WhatIf)
+    {
+        Write-Host "Folder has to be created" -ForegroundColor Yellow
+    }
+    else {
+        New-Item $CMFolderPath
+        Write-Host "Folder created" -ForegroundColor Yellow
+    }
+    #check if Chocolatey installer exists in SCCM
+    Write-Host "Checking Chocolatey installer: " -NoNewline
+    $chocoinstaller = Get-CMApplication -Name "Chocolatey"
+    if ($chocoinstaller -ne $null)
+    {
+        Write-Host "OK" -ForegroundColor Green
+    }
+    elseif (($chocoinstaller -eq $null) -and ($WhatIf))
+    {
+        Write-Host "Doesn't exit in SCCM, will be added" -ForegroundColor Yellow
+    }
+    else
+    {
+        Write-Host "Adding Chocolatey installer to SCCM" -ForegroundColor Yellow 
+        try
+        {
+            $iconfileico = $IconsDir + "\chocolatey.ico"
+            if ((-not $WhatIf) -and (-not (test-path $iconfileico)))
+            {
+                Copy-Item (join-path $PSScriptRoot "chocolatey.ico") $IconsDir -ErrorAction SilentlyContinue
+            }   
+            $chocoinstaller = New-CMApplication -Name "Chocolatey" -Description "Chocolatey package manager" `
+                -Publisher "Chocolatey.org" -AutoInstall $true -IconLocationFile $iconfileico
+            
+            $command = 'powershell -executionpolicy RemoteSigned -command "iwr https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression"'
+            $detect = 'if (test-path "C:\ProgramData\Chocolatey\choco.exe"){Write-host "installed"}'
+
+            Add-CMScriptDeploymentType -ApplicationName "Chocolatey" -DeploymentTypeName "Chcolatey installer" `
+                -Comment "Do not remove. This is Chocolatey installer" -InstallCommand $command -ScriptLanguage PowerShell -ScriptContent $detect `
+                | Out-Null
+            Move-CMObject -InputObject $chocoinstaller -FolderPath $CMFolderPath
+            Write-Host "Success" -ForegroundColor Green
+        }
+        catch 
+        {
+            Write-Host "Failed" -ForegroundColor Red
+            throw "Cannot add Chocolatey installer to SCCM"
+        }
+    }
+    
     #endregion
 
     #region getpackageinfo
@@ -162,7 +219,7 @@ function Add-SCCMChocoApplication
     $packageid = $chocourl.Split("/")[-1]
 
     #find package
-    $package = Find-Package -Name $packageid -ProviderName chocolatey | Out-Null
+    $package = Find-Package -Name $packageid -ProviderName chocolatey
     if ($package -eq $null)
     {
         throw "###########   Cannot find package, please verify if the URL is valid. ############"
@@ -171,7 +228,6 @@ function Add-SCCMChocoApplication
 
     #get icon url
     [xml]$swid = $package.SwidTagText
-    #$swid.SoftwareIdentity.Meta.description
     $iconurl = (($swid.SoftwareIdentity.Link | ?{$_.rel -match "icon"}).href.split("?")[0])
     #endregion
 
@@ -197,19 +253,81 @@ function Add-SCCMChocoApplication
             $icon.Save($iconfileico,"Icon")
         }
         $icon.Dispose();
-        Write-Host "OK" -BackgroundColor Green
+        Write-Host "OK" -ForegroundColor Green
     }
     catch
     {
         $iconfileico = $IconsDir + "\chocolatey.ico"
         if ((-not $WhatIf) -and (-not (test-path $iconfileico)))
         {
-            Copy-Item "chocolatey.ico" $IconsDir -ErrorAction SilentlyContinue
+            Copy-Item (join-path $PSScriptRoot "chocolatey.ico") $IconsDir -ErrorAction SilentlyContinue
         }
 
         Write-Host " couldn't prepare icon, using default one:" -ForegroundColor Yellow
         Write-Host $iconfileico -ForegroundColor Yellow
         Write-Host "Please update icon manually using SCCM console" -ForegroundColor Yellow
+    }
+    #endregion
+
+    #region addSCCMapp
+    $CMApp = Get-CMApplication -Name $package.Name
+    if ($CMApp -ne $null)
+    {
+        Write-Host ("Application " +$package.Name + " already exists.") -ForegroundColor Yellow
+    }
+    elseif ($WhatIf)
+    {
+        Write-Host ("Application " + $package.Name + " will be added (WhatIf enabled)")
+    }
+    else
+    {
+        Write-Host ("Adding " + $package.Name + " to SCCM Applications" )
+        #Add application
+        $CMAppParams = @{
+            Name = $package.Name
+            AutoInstall = $true 
+            Description = $package.Summary
+            IconLocationFile =$iconfileico
+            LocalizedName =$swid.SoftwareIdentity.Meta.title
+            LocalizedDescription = $package.Summary
+        }
+        $CMapp = New-CMApplication @CMAppParams 
+        Write-host "Adding deployment type"
+        #Add application deployment type
+
+        $CMAppDeplParams = @{
+            ApplicationName =$package.Name
+            DeploymentTypeName = ($package.Name +"-choco")
+            InstallCommand = ("c:\ProgramData\chocolatey\bin\choco install {0} -y" -f $package.name )
+            ScriptLanguage = "PowerShell"
+            ScriptContent = 
+                '$packacgename = "'+$package.name+'" 
+                try{
+                    c:\ProgramData\chocolatey\bin\choco list --local-only | ?{$_ -match $packacgename} | Out-Null
+                    if($matches[0] -gt 0)
+                    {
+                        Write-Host "installed"
+                    }
+                }
+                catch{}
+                '
+            UninstallCommand = ("c:\ProgramData\chocolatey\bin\choco uninstall {0} -y" -f $package.name)
+            InstallationBehaviorType = "InstallForSystem"
+            LogonRequirementType = "WhetherOrNotUserLoggedOn" 
+            Comment = $chocourl
+        }
+ 
+        $CMDeplType = Add-CMScriptDeploymentType @CMAppDeplParams | Out-Null
+        $CMDeplType = Get-CMDeploymentType -ApplicationName $package.Name -DeploymentTypeName ($package.Name+"-choco")
+
+        #Add dependencies (install Choco before installing the app)
+        Write-host "Adding dependencies"
+        $CMDepGroup = New-CMDeploymentTypeDependencyGroup -GroupName "Choco" -InputObject $CMDeplType
+        Add-CMDeploymentTypeDependency -DeploymentTypeDependency (Get-CMDeploymentType -ApplicationName "Chocolatey")`
+            -InputObject $CMDepGroup -IsAutoInstall $true
+            
+        Write-host "Moving object"    
+        Move-CMObject -FolderPath $CMFolderPath -InputObject $CMapp
     }
     #endregion
 
