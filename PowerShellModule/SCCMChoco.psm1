@@ -50,7 +50,7 @@ function Add-SCCMChocoApplication
     
     .PARAMETER IconsDir
     Network folder for icons
-   
+       
     .PARAMETER CMFolderName
     SCCM folder for Chocolatey applications
    
