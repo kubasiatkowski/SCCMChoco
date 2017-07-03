@@ -1,7 +1,9 @@
 # SCCMChoco
 ## Description
-PowerShell module integrating Chocolatey with SCCM. Provide URL of Chocolatey package, sit down, relax and wait for new applications to apprear in Software Center. 
-Applications are built using PowerShell wrappers to download all content from Internet. Nothing is stored on SCCM distribution points, all software is available immidiately 
+PowerShell module integrating Chocolatey with SCCM. Provide URL of Chocolatey package, sit down, relax and wait for new applications to appear in Software Center. 
+Applications are built using PowerShell wrappers to download all content from Internet. Nothing is stored on SCCM distribution points, all software is available immediately
+
+Check [screenshots](https://github.com/kubasiatkowski/SCCMChoco/tree/master/Screenshots) to see code in action!!
 
 ## Requirements
 ### Computer running the module:
@@ -28,7 +30,7 @@ https://docs.microsoft.com/en-us/sccm/core/clients/deploy/about-client-settings#
 
 ` import-module c:\*pathtodownloadedfiles*\PowerShellModule\SCCMChoco.psm1 `
 
-4. Check examples and ejnoy :)
+4. Check examples and enjoy :)
 
 ## Examples
 
