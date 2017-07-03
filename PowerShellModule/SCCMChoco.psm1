@@ -33,32 +33,57 @@ function Add-SCCMChocoApplication
     Add-SCCMChocoApplication -chocourl "https://chocolatey.org/packages/Firefox" -CMInstallDir "C:\Microsoft Configuration Manager\" - CMSiteCode "TST"
     # Add Chocolatey package to SCCM Software Library, specify location of SCCM console and SiteCode
      
+    .PARAMETER chocourl
+    URL of Choco package, for example: https://chocolatey.org/packages/Firefox
+
+    .PARAMETER CMUserCollectionName
+    Name of User Collection to deploy the software
+   
+    .PARAMETER CMDeviceCollectionName
+    Name of Device Collection to deploy the software
+    
+    .PARAMETER CMSiteCode
+     SCCM Site Code
+
+    .PARAMETER CMInstallDir
+    SCCM Installation direcotry (console is required due to PowerShell module)
+    
+    .PARAMETER IconsDir
+    Network folder for icons
+   
+    .PARAMETER CMFolderName
+    SCCM folder for Chocolatey applications
+   
+    .PARAMETER WhatIf
+    Just test, don't apply any changes... but Chocolatey repository and NuGet will be configured to download package metadata.
+
     .NOTES
-    You must have SCCM console installed on your computer. On first run you will be asked to configure NuGet and Chocolatey repository (but don't be afraid, we will do it fo you). Make sure you have PowerShell Gallery installed (https://msdn.microsoft.com/en-us/powershell/gallery/readme)
+    You must have SCCM console installed on your computer. On first run you will be asked to configure NuGet and Chocolatey repository (but don't be afraid, we will do it fo you). 
+    Make sure you have PowerShell Gallery installed (https://msdn.microsoft.com/en-us/powershell/gallery/readme). 
+    This version requires clients to have PowerShell Policy configured to Bypass for SCCM Agent (see screenshot in github repo)
 
     #>
     [CmdletBinding(DefaultParameterSetName="default")]
     param(
-        [Parameter(Mandatory=$true,HelpMessage="Please provide URL of Choco package, for example: https://chocolatey.org/packages/Firefox")]
+        [Parameter(Mandatory=$true)]
         [ValidatePattern('^(https://chocolatey.org/packages/)')]
         [string] $chocourl,
-        [Parameter(ParameterSetName="DeployToUserCollection",Mandatory=$false,HelpMessage="Name of User Collection to deploy the software")]
+        [Parameter(ParameterSetName="DeployToUserCollection",Mandatory=$false)]
         [string] $CMUserCollectionName,
-        [Parameter(ParameterSetName="DeployToDeviceCollection",Mandatory=$false,HelpMessage="Name of Device Collection to deploy the software")]
+        [Parameter(ParameterSetName="DeployToDeviceCollection",Mandatory=$false)]
         [string] $CMDeviceCollectionName,
-        [Parameter(Mandatory=$false,HelpMessage="SCCM Site Code")]
+        [Parameter(Mandatory=$false)]
         [ValidatePattern('^[A-Z]{2}[A-Z0-9]{1}$')]
         [string] $CMSiteCode,
-        [Parameter(Mandatory=$false,HelpMessage="SCCM Installation direcotry (console is required due to PowerShell module)")]
+        [Parameter(Mandatory=$false)]
         [ValidatePattern('^[A-Z]{2}[A-Z0-9]{1}$')]
         [string] $CMInstallDir,
-        [Parameter(Mandatory=$false,HelpMessage="Network folder for icons")]
+        [Parameter(Mandatory=$false)]
         [string] $IconsDir = $env:temp,
-        [Parameter(Mandatory=$false,HelpMessage="SCCM folder for Chocolatey applications")]
+        [Parameter(Mandatory=$false)]
         [string] $CMFolderName = "Chocolatey",
-        [Parameter(Mandatory=$false,HelpMessage="Just test, don't actually make any permanent changes")]
+        [Parameter(Mandatory=$false)]
         [switch] $WhatIf
-
     )
 
 
@@ -70,19 +95,17 @@ function Add-SCCMChocoApplication
     if ((Get-PSRepository "Chocolatey" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).count -eq 0)
     {   
         Write-Host "Installation required" -ForegroundColor Yellow
-        if (-not $WhatIf)
-        {
-            Write-Host "#####################################" -BackgroundColor Yellow -ForegroundColor Black
-            Write-Host "# Please install NuGet if requested #" -BackgroundColor Yellow -ForegroundColor Black
-            Write-Host "# Select [Y] Yes or press enter     #" -BackgroundColor Yellow -ForegroundColor Black
-            Write-Host "#####################################" -BackgroundColor Yellow -ForegroundColor Black 
-            Register-PSRepository -Name "Chocolatey" -SourceLocation "https://chocolatey.org/api/v2"
-            Write-Host "#################################################" -BackgroundColor Yellow -ForegroundColor Black
-            Write-Host "# Please approve Chocolatey as a package source #" -BackgroundColor Yellow -ForegroundColor Black
-            Write-Host "# Select [Y] Yes                                #" -BackgroundColor Yellow -ForegroundColor Black
-            Write-Host "#################################################" -BackgroundColor Yellow -ForegroundColor Black 
-            Install-PackageProvider -Name chocolatey
-        }
+        Write-Host "#####################################" -BackgroundColor Yellow -ForegroundColor Black
+        Write-Host "# Please install NuGet if requested #" -BackgroundColor Yellow -ForegroundColor Black
+        Write-Host "# Select [Y] Yes or press enter     #" -BackgroundColor Yellow -ForegroundColor Black
+        Write-Host "# when asked                        #" -BackgroundColor Yellow -ForegroundColor Black
+        Write-Host "#####################################" -BackgroundColor Yellow -ForegroundColor Black 
+        Register-PSRepository -Name "Chocolatey" -SourceLocation "https://chocolatey.org/api/v2"
+        Write-Host "#################################################" -BackgroundColor Yellow -ForegroundColor Black
+        Write-Host "# Please approve Chocolatey as a package source #" -BackgroundColor Yellow -ForegroundColor Black
+        Write-Host "# Select [Y] Yes when asked                     #" -BackgroundColor Yellow -ForegroundColor Black
+        Write-Host "#################################################" -BackgroundColor Yellow -ForegroundColor Black 
+        Install-PackageProvider -Name chocolatey 
     }
     if ((Get-PSRepository "Chocolatey" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).count -eq 0)
     {
@@ -111,14 +134,10 @@ function Add-SCCMChocoApplication
              $psdmodulepath = Join-Path -Path $env:SMS_ADMIN_UI_PATH -ChildPath "..\ConfigurationManager.psd1"
         }
         
-        if ((Test-Path $psdmodulepath) -and (-not $WhatIf))
+        if (Test-Path $psdmodulepath)
         {
             Import-Module $psdmodulepath
             Write-Host "Module loaded" -ForegroundColor Green
-        }
-        elseif ((Test-Path $psdmodulepath) -and $WhatIf)
-        {
-            Write-Host "Module available, not loaded (WhatIf enabled)" -ForegroundColor Green
         }
         else
         {
@@ -260,7 +279,7 @@ function Add-SCCMChocoApplication
         $iconfileico = $IconsDir + "\chocolatey.ico"
         if ((-not $WhatIf) -and (-not (test-path $iconfileico)))
         {
-            Copy-Item (join-path $PSScriptRoot "chocolatey.ico") $IconsDir -ErrorAction SilentlyContinue
+            Copy-Item -Path (join-path $PSScriptRoot "chocolatey.ico") -Destination filesystem::$iconfileico -ErrorAction SilentlyContinue
         }
 
         Write-Host " couldn't prepare icon, using default one:" -ForegroundColor Yellow
@@ -286,7 +305,7 @@ function Add-SCCMChocoApplication
         $CMAppParams = @{
             Name = $package.Name
             AutoInstall = $true 
-            Description = $package.Summary
+            Description = $chocourl
             IconLocationFile =$iconfileico
             LocalizedName =$swid.SoftwareIdentity.Meta.title
             LocalizedDescription = $package.Summary
@@ -324,10 +343,47 @@ function Add-SCCMChocoApplication
         Write-host "Adding dependencies"
         $CMDepGroup = New-CMDeploymentTypeDependencyGroup -GroupName "Choco" -InputObject $CMDeplType
         Add-CMDeploymentTypeDependency -DeploymentTypeDependency (Get-CMDeploymentType -ApplicationName "Chocolatey")`
-            -InputObject $CMDepGroup -IsAutoInstall $true
+            -InputObject $CMDepGroup -IsAutoInstall $true | Out-Null
             
         Write-host "Moving object"    
         Move-CMObject -FolderPath $CMFolderPath -InputObject $CMapp
+    }
+    #endregion
+
+    #region deploy
+    $CMDeplColl
+    if (($PsCmdlet.ParameterSetName -eq "DeployToUserCollection") -and  ($CMUserCollectionName.Length -gt 0))
+    {
+        Write-Host "Getting User Collection: " -NoNewline
+        $CMDeplColl = Get-CMCollection -Name $CMUserCollectionName -CollectionType User   
+    }
+    elseif (($PsCmdlet.ParameterSetName -eq "DeployToDeviceCollection") -and  ($CMDeviceCollectionName.Length -gt 0))
+    {
+        Write-Host "Getting Device Collection: " -NoNewline
+        $CMDeplColl = Get-CMCollection -Name $CMDeviceCollectionName -CollectionType Device   
+    }
+
+    if ($CMDeplColl -ne $null)
+    {
+        Write-Host "Ok" -ForegroundColor Green
+        Write-Host "Starting Deployment"
+        if (-not $WhatIf)
+        {
+            try{
+                #'Start-CMApplicationDeployment' has been deprecated in 1702 and may be removed in a future release.
+                #The cmdlet 'New-CMApplicationDeployment' may be used as a replacement.
+                Start-CMApplicationDeployment -Collection $CMDeplColl.Name -Name $package.Name -DeployAction Install -DeployPurpose Available 
+                Write-Host "Ok" -ForegroundColor Green | Out-Null
+            }
+            catch
+            {
+                Write-Host "Failed" -ForegroundColor Red
+            }
+        }
+        else
+        {
+            Write-Host "Simulation-only (WhatIf)" -ForegroundColor Yellow
+        }
     }
     #endregion
 
