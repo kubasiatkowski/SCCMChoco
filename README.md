@@ -58,4 +58,5 @@ https://docs.microsoft.com/en-us/sccm/core/clients/deploy/about-client-settings#
 
 - Nice installer
 - Integration with SCCM GUI
+- Updates scheduler
 - Code signing
