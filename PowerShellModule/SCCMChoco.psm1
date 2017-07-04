@@ -58,9 +58,9 @@ function Add-SCCMChocoApplication
     Just test, don't apply any changes... but Chocolatey repository and NuGet will be configured to download package metadata.
 
     .NOTES
-    You must have SCCM console installed on your computer. On first run you will be asked to configure NuGet and Chocolatey repository (but don't be afraid, we will do it fo you). 
-    Make sure you have PowerShell Gallery installed (https://msdn.microsoft.com/en-us/powershell/gallery/readme). 
-    This version requires clients to have PowerShell Policy configured to Bypass for SCCM Agent (see screenshot in github repo)
+    To use this module you must have SCCM console installed on your computer.
+    Make sure you have PowerShell Gallery installed (https://msdn.microsoft.com/en-us/powershell/gallery/readme). On first run you will be asked to configure NuGet and Chocolatey repository (but don't be afraid, we will do it fo you).  
+    This version requires SCCM Agents to have PowerShell Policy configured to Bypass (see screenshot in GitHub repo)
 
     #>
     [CmdletBinding(DefaultParameterSetName="default")]
@@ -76,7 +76,6 @@ function Add-SCCMChocoApplication
         [ValidatePattern('^[A-Z]{2}[A-Z0-9]{1}$')]
         [string] $CMSiteCode,
         [Parameter(Mandatory=$false)]
-        [ValidatePattern('^[A-Z]{2}[A-Z0-9]{1}$')]
         [string] $CMInstallDir,
         [Parameter(Mandatory=$false)]
         [string] $IconsDir = $env:temp,
@@ -147,7 +146,7 @@ function Add-SCCMChocoApplication
         }
     }
 
-    #test if already in SCCM context, switch context
+    #test if already in SCCM context, switch context if required
     Write-Host "Connecting to SCCM site: " -NoNewline
     $location = Get-Location
     if ($location.Provider.Name -eq "CMSite")  
@@ -190,7 +189,8 @@ function Add-SCCMChocoApplication
         New-Item $CMFolderPath
         Write-Host "Folder created" -ForegroundColor Yellow
     }
-    #check if Chocolatey installer exists in SCCM
+    
+    #check if Chocolatey installer exists in SCCM, add if required
     Write-Host "Checking Chocolatey installer: " -NoNewline
     $chocoinstaller = Get-CMApplication -Name "Chocolatey"
     if ($chocoinstaller -ne $null)
@@ -251,7 +251,7 @@ function Add-SCCMChocoApplication
     #endregion
 
     #region prepareicon
-    #Build ico file from BMP
+    #try to build ico file from BMP
     Write-Host "Preparing icon: " -NoNewl
     
     [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null 
@@ -276,6 +276,7 @@ function Add-SCCMChocoApplication
     }
     catch
     {
+        #this is hit when there is no icon or icon is in vector format
         $iconfileico = $IconsDir + "\chocolatey.ico"
         if ((-not $WhatIf) -and (-not (test-path $iconfileico)))
         {
@@ -289,6 +290,7 @@ function Add-SCCMChocoApplication
     #endregion
 
     #region addSCCMapp
+    
     $CMApp = Get-CMApplication -Name $package.Name
     if ($CMApp -ne $null)
     {
@@ -312,8 +314,8 @@ function Add-SCCMChocoApplication
         }
         $CMapp = New-CMApplication @CMAppParams 
         Write-host "Adding deployment type"
+       
         #Add application deployment type
-
         $CMAppDeplParams = @{
             ApplicationName =$package.Name
             DeploymentTypeName = ($package.Name +"-choco")
