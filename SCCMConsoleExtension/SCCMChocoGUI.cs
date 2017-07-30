@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,9 +14,21 @@ namespace SCCMConsoleExtension
 {
     public partial class SCCMChocoGUI : Form
     {
-        public SCCMChocoGUI()
+        string[] args;
+        string cmSiteCode;
+        string cmServerName;
+        public SCCMChocoGUI(string[] args)
         {
             InitializeComponent();
+            this.args = args;
+            foreach (string arg in args)
+            {
+                rtfPackageDetails.Text += arg;
+            }
+            cmSiteCode = (string)Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Microsoft\ConfigMgr10\AdminUI\MRU\1", "SiteCode", null);
+            cmServerName = (string)Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Microsoft\ConfigMgr10\AdminUI\MRU\1", "ServerName", null);
+
+            stulblStatus.Text += " Connected to: " + cmServerName + " Site: " + cmSiteCode;
         }
 
 

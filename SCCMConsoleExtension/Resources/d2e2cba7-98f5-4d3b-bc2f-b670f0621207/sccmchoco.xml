@@ -1,0 +1,17 @@
+                      <ActionDescription NamespaceGuid="38221d2d-2427-48f7-8cba-432bd6d57c36" Class="Executable" SelectionMode="Both" DisplayName="Add Chocolatey Application" MnemonicDisplayName="Add Chocolatey Application" Description="Open SCCM Choco GUI to search the repository and add applications to SCCM">
+                        <ShowOn>
+                          <string>DefaultHomeTab</string>
+                          <string>FolderTab</string>
+                          <string>ContextMenu</string>
+                        </ShowOn>  
+                        <ImagesDescription>
+                          <ResourceAssembly>
+                            <Assembly>AdminUI.AISoftwareProducts.dll</Assembly>
+                            <Type>Microsoft.ConfigurationManagement.AdminConsole.AISoftwareProducts.Properties.Resources.resources</Type>
+                          </ResourceAssembly>
+                          <ImageResourceName>SoftwareProducts</ImageResourceName>
+                        </ImagesDescription>
+                        <Executable>
+                          <FilePath>..\..\..\gitrepo\sccmchoco\SCCMConsoleExtension\bin\Debug\SCCMConsoleExtension.exe</FilePath> 
+                        </Executable>
+                      </ActionDescription>
