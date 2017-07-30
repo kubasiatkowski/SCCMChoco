@@ -31,6 +31,10 @@
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.cmdSearch = new System.Windows.Forms.Button();
             this.dgdSearchResults = new System.Windows.Forms.DataGridView();
+            this.packageName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.version = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.downloads = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.chocoObject = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.mnuMenu = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,10 +50,6 @@
             this.picIcon = new System.Windows.Forms.PictureBox();
             this.lblPackageName = new System.Windows.Forms.Label();
             this.rtfPackageInfo = new System.Windows.Forms.RichTextBox();
-            this.packageName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.version = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.downloads = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.chocoObject = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgdSearchResults)).BeginInit();
             this.mnuMenu.SuspendLayout();
             this.stuStatus.SuspendLayout();
@@ -101,6 +101,39 @@
             this.dgdSearchResults.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgdSearchResults_CellContentClick);
             this.dgdSearchResults.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgdSearchResults_CellContentClick);
             // 
+            // packageName
+            // 
+            this.packageName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.packageName.FillWeight = 317F;
+            this.packageName.HeaderText = "Name";
+            this.packageName.MinimumWidth = 300;
+            this.packageName.Name = "packageName";
+            this.packageName.ReadOnly = true;
+            this.packageName.Width = 300;
+            // 
+            // version
+            // 
+            this.version.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.version.HeaderText = "Version";
+            this.version.Name = "version";
+            this.version.ReadOnly = true;
+            this.version.Visible = false;
+            // 
+            // downloads
+            // 
+            this.downloads.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.downloads.HeaderText = "Downloads";
+            this.downloads.MinimumWidth = 100;
+            this.downloads.Name = "downloads";
+            this.downloads.ReadOnly = true;
+            // 
+            // chocoObject
+            // 
+            this.chocoObject.HeaderText = "ChocoObject";
+            this.chocoObject.Name = "chocoObject";
+            this.chocoObject.ReadOnly = true;
+            this.chocoObject.Visible = false;
+            // 
             // mnuMenu
             // 
             this.mnuMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -112,7 +145,6 @@
             this.mnuMenu.Size = new System.Drawing.Size(884, 24);
             this.mnuMenu.TabIndex = 1;
             this.mnuMenu.Text = "menuStrip1";
-            this.mnuMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
             // 
             // toolStripMenuItem1
             // 
@@ -139,8 +171,9 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -156,7 +189,7 @@
             // onlineHelpToolStripMenuItem
             // 
             this.onlineHelpToolStripMenuItem.Name = "onlineHelpToolStripMenuItem";
-            this.onlineHelpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.onlineHelpToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.onlineHelpToolStripMenuItem.Text = "Online help";
             this.onlineHelpToolStripMenuItem.Click += new System.EventHandler(this.onlineHelpToolStripMenuItem_Click);
             // 
@@ -219,9 +252,8 @@
             this.lblPackageName.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPackageName.Location = new System.Drawing.Point(501, 30);
             this.lblPackageName.Name = "lblPackageName";
-            this.lblPackageName.Size = new System.Drawing.Size(58, 30);
+            this.lblPackageName.Size = new System.Drawing.Size(0, 30);
             this.lblPackageName.TabIndex = 6;
-            this.lblPackageName.Text = "label";
             // 
             // rtfPackageInfo
             // 
@@ -233,40 +265,6 @@
             this.rtfPackageInfo.Size = new System.Drawing.Size(277, 45);
             this.rtfPackageInfo.TabIndex = 8;
             this.rtfPackageInfo.Text = "";
-            // 
-            // packageName
-            // 
-            this.packageName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.packageName.FillWeight = 317F;
-            this.packageName.HeaderText = "Name";
-            this.packageName.MinimumWidth = 300;
-            this.packageName.Name = "packageName";
-            this.packageName.ReadOnly = true;
-            this.packageName.Width = 300;
-            // 
-            // version
-            // 
-            this.version.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.version.HeaderText = "Version";
-            this.version.Name = "version";
-            this.version.ReadOnly = true;
-            this.version.Visible = false;
-            this.version.Width = 67;
-            // 
-            // downloads
-            // 
-            this.downloads.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.downloads.HeaderText = "Downloads";
-            this.downloads.MinimumWidth = 100;
-            this.downloads.Name = "downloads";
-            this.downloads.ReadOnly = true;
-            // 
-            // chocoObject
-            // 
-            this.chocoObject.HeaderText = "ChocoObject";
-            this.chocoObject.Name = "chocoObject";
-            this.chocoObject.ReadOnly = true;
-            this.chocoObject.Visible = false;
             // 
             // SCCMChocoGUI
             // 

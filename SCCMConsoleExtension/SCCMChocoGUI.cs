@@ -14,28 +14,37 @@ namespace SCCMConsoleExtension
 {
     public partial class SCCMChocoGUI : Form
     {
-        string[] args;
-        string cmSiteCode;
         string cmServerName;
+        SCCMWrapper sccmWrapper;
         public SCCMChocoGUI(string[] args)
         {
             InitializeComponent();
-            this.args = args;
-            foreach (string arg in args)
+            REGHelper regHelper = new REGHelper();
+            
+            cmServerName = regHelper.read("cmServerName");
+            if (cmServerName == null)
             {
-                rtfPackageDetails.Text += arg;
+                cmServerName = regHelper.read(@"HKEY_CURRENT_USER\SOFTWARE\Microsoft\ConfigMgr10\AdminUI\MRU\1", "ServerName");
+                regHelper.write("cmServerName", cmServerName);
             }
-            cmSiteCode = (string)Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Microsoft\ConfigMgr10\AdminUI\MRU\1", "SiteCode", null);
-            cmServerName = (string)Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Microsoft\ConfigMgr10\AdminUI\MRU\1", "ServerName", null);
-
-            stulblStatus.Text += " Connected to: " + cmServerName + " Site: " + cmSiteCode;
+            updateStatusBar();               
         }
 
-
-        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        public void updateStatusBar()
         {
-
+            REGHelper regHelper = new REGHelper();
+            cmServerName = regHelper.read("cmServerName");
+            try
+            {
+                sccmWrapper = new SCCMWrapper(cmServerName);
+                stulblStatus.Text = "Connected to: " + cmServerName;
+            }
+            catch
+            {
+                stulblStatus.Text = "Cannot connect to: " + cmServerName + " check settings";
+            }
         }
+
 
         private void cmdSearch_Click(object sender, EventArgs e)
         {
@@ -95,5 +104,18 @@ namespace SCCMConsoleExtension
             OnlineHelp f = new OnlineHelp();
             f.Show();
         }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Settings s = new Settings();
+            s.FormClosing += new FormClosingEventHandler(settingsToolStripMenuItem_FormClosing);
+            s.Show();
+        }
+        private void settingsToolStripMenuItem_FormClosing(object sender, EventArgs e)
+        {
+            this.updateStatusBar();
+        }
+
+
     }
 }
