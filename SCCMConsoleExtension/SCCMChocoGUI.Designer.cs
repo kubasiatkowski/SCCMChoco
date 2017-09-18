@@ -41,7 +41,6 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.onlineHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmdAddToSCCM = new System.Windows.Forms.Button();
             this.rtfPackageDetails = new System.Windows.Forms.RichTextBox();
@@ -126,6 +125,7 @@
             this.downloads.MinimumWidth = 100;
             this.downloads.Name = "downloads";
             this.downloads.ReadOnly = true;
+            this.downloads.Width = 105;
             // 
             // chocoObject
             // 
@@ -136,13 +136,14 @@
             // 
             // mnuMenu
             // 
+            this.mnuMenu.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.mnuMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1,
             this.editToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.mnuMenu.Location = new System.Drawing.Point(0, 0);
             this.mnuMenu.Name = "mnuMenu";
-            this.mnuMenu.Size = new System.Drawing.Size(884, 24);
+            this.mnuMenu.Size = new System.Drawing.Size(884, 40);
             this.mnuMenu.TabIndex = 1;
             this.mnuMenu.Text = "menuStrip1";
             // 
@@ -151,27 +152,28 @@
             this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(37, 20);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(64, 38);
             this.toolStripMenuItem1.Text = "File";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(268, 38);
             this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.settingsToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(67, 38);
             this.editToolStripMenuItem.Text = "Edit";
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(200, 38);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
@@ -179,25 +181,18 @@
             // 
             this.helpToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.onlineHelpToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 38);
             this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // onlineHelpToolStripMenuItem
-            // 
-            this.onlineHelpToolStripMenuItem.Name = "onlineHelpToolStripMenuItem";
-            this.onlineHelpToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
-            this.onlineHelpToolStripMenuItem.Text = "Online help";
-            this.onlineHelpToolStripMenuItem.Click += new System.EventHandler(this.onlineHelpToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(268, 38);
             this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // cmdAddToSCCM
             // 
@@ -208,6 +203,7 @@
             this.cmdAddToSCCM.TabIndex = 1;
             this.cmdAddToSCCM.Text = "Add to SCCM";
             this.cmdAddToSCCM.UseVisualStyleBackColor = true;
+            this.cmdAddToSCCM.Click += new System.EventHandler(this.cmdAddToSCCM_Click);
             // 
             // rtfPackageDetails
             // 
@@ -222,11 +218,12 @@
             // 
             // stuStatus
             // 
+            this.stuStatus.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.stuStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.stulblStatus});
-            this.stuStatus.Location = new System.Drawing.Point(0, 439);
+            this.stuStatus.Location = new System.Drawing.Point(0, 424);
             this.stuStatus.Name = "stuStatus";
-            this.stuStatus.Size = new System.Drawing.Size(884, 22);
+            this.stuStatus.Size = new System.Drawing.Size(884, 37);
             this.stuStatus.SizingGrip = false;
             this.stuStatus.TabIndex = 4;
             this.stuStatus.Text = "statusStrip1";
@@ -234,7 +231,7 @@
             // stulblStatus
             // 
             this.stulblStatus.Name = "stulblStatus";
-            this.stulblStatus.Size = new System.Drawing.Size(272, 17);
+            this.stulblStatus.Size = new System.Drawing.Size(531, 32);
             this.stulblStatus.Text = "https://github.com/kubasiatkowski/SCCMChoco/";
             // 
             // picIcon
@@ -252,7 +249,7 @@
             this.lblPackageName.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPackageName.Location = new System.Drawing.Point(501, 30);
             this.lblPackageName.Name = "lblPackageName";
-            this.lblPackageName.Size = new System.Drawing.Size(0, 30);
+            this.lblPackageName.Size = new System.Drawing.Size(0, 57);
             this.lblPackageName.TabIndex = 6;
             // 
             // rtfPackageInfo
@@ -313,7 +310,6 @@
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem onlineHelpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel stulblStatus;
         private System.Windows.Forms.PictureBox picIcon;

@@ -16,6 +16,7 @@ namespace SCCMConsoleExtension
     {
         string cmServerName;
         SCCMWrapper sccmWrapper;
+        srChocolatey.V2FeedPackage package;
         public SCCMChocoGUI(string[] args)
         {
             InitializeComponent();
@@ -67,7 +68,7 @@ namespace SCCMConsoleExtension
         {
             DataGridView dgv = (DataGridView)sender;
             dgv.Rows[dgv.SelectedCells[0].RowIndex].Selected = true;
-            srChocolatey.V2FeedPackage package = (srChocolatey.V2FeedPackage)dgv.Rows[dgv.SelectedCells[0].RowIndex].Cells[3].Value;
+            package = (srChocolatey.V2FeedPackage)dgv.Rows[dgv.SelectedCells[0].RowIndex].Cells[3].Value;
             cmdAddToSCCM.Enabled = true;
             lblPackageName.Text = package.Title;
             rtfPackageInfo.Text = "Version: " + package.Version + Environment.NewLine;
@@ -99,12 +100,6 @@ namespace SCCMConsoleExtension
             }
         }
 
-        private void onlineHelpToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OnlineHelp f = new OnlineHelp();
-            f.Show();
-        }
-
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Settings s = new Settings();
@@ -116,6 +111,21 @@ namespace SCCMConsoleExtension
             this.updateStatusBar();
         }
 
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
 
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            About a = new About();
+            a.FormClosing += new FormClosingEventHandler(settingsToolStripMenuItem_FormClosing);
+            a.Show();
+        }
+
+        private void cmdAddToSCCM_Click(object sender, EventArgs e)
+        {
+            sccmWrapper.AddApplication(package.Title, package.Description);
+        }
     }
 }

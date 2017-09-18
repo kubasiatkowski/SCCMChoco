@@ -32,11 +32,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AdminUI.AppManFoundation">
+      <HintPath>..\..\..\Microsoft Configuration Manager\AdminConsole\bin\AdminUI.AppManFoundation.dll</HintPath>
+    </Reference>
     <Reference Include="AdminUI.WqlQueryEngine">
       <HintPath>..\..\..\Microsoft Configuration Manager\AdminConsole\bin\AdminUI.WqlQueryEngine.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ConfigurationManagement.ApplicationManagement">
       <HintPath>..\..\..\Microsoft Configuration Manager\AdminConsole\bin\Microsoft.ConfigurationManagement.ApplicationManagement.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ConfigurationManagement.ApplicationManagement.MsiInstaller">
+      <HintPath>..\..\..\Microsoft Configuration Manager\AdminConsole\bin\Microsoft.ConfigurationManagement.ApplicationManagement.MsiInstaller.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ConfigurationManagement.ManagementProvider">
       <HintPath>..\..\..\Microsoft Configuration Manager\AdminConsole\bin\Microsoft.ConfigurationManagement.ManagementProvider.dll</HintPath>
@@ -92,18 +98,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="About.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="About.Designer.cs">
+      <DependentUpon>About.cs</DependentUpon>
+    </Compile>
     <Compile Include="AppCode\REGHelper.cs" />
     <Compile Include="AppCode\SCCMWrapper.cs" />
     <Compile Include="Connected Services\srChocolatey\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.datasvcmap</DependentUpon>
-    </Compile>
-    <Compile Include="OnlineHelp.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="OnlineHelp.Designer.cs">
-      <DependentUpon>OnlineHelp.cs</DependentUpon>
     </Compile>
     <Compile Include="Resources\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -125,8 +131,8 @@
     <Compile Include="Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="OnlineHelp.resx">
-      <DependentUpon>OnlineHelp.cs</DependentUpon>
+    <EmbeddedResource Include="About.resx">
+      <DependentUpon>About.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -150,6 +156,7 @@
     </EmbeddedResource>
     <None Include="Connected Services\srChocolatey\service.edmx" />
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\SCCMConsoleExtension.srChocolatey.FeedContext_x0060_1.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
