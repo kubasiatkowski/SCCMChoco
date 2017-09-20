@@ -186,6 +186,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\d2e2cba7-98f5-4d3b-bc2f-b670f0621207\sccmchoco.xml" />
+    <EmbeddedResource Include="Resources\SCCMChoco.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

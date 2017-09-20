@@ -32,6 +32,7 @@
             this.lblVer = new System.Windows.Forms.Label();
             this.lnkProjectPage = new System.Windows.Forms.LinkLabel();
             this.cmdClose = new System.Windows.Forms.Button();
+            this.lblSite = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblTitle
@@ -40,7 +41,7 @@
             this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitle.Location = new System.Drawing.Point(27, 19);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(274, 51);
+            this.lblTitle.Size = new System.Drawing.Size(140, 26);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "SCCMChoco";
             // 
@@ -66,7 +67,7 @@
             // 
             // cmdClose
             // 
-            this.cmdClose.Location = new System.Drawing.Point(146, 194);
+            this.cmdClose.Location = new System.Drawing.Point(92, 194);
             this.cmdClose.Name = "cmdClose";
             this.cmdClose.Size = new System.Drawing.Size(75, 23);
             this.cmdClose.TabIndex = 3;
@@ -74,16 +75,28 @@
             this.cmdClose.UseVisualStyleBackColor = true;
             this.cmdClose.Click += new System.EventHandler(this.cmdClose_Click);
             // 
+            // lblSite
+            // 
+            this.lblSite.AutoSize = true;
+            this.lblSite.Location = new System.Drawing.Point(33, 128);
+            this.lblSite.Name = "lblSite";
+            this.lblSite.Size = new System.Drawing.Size(62, 13);
+            this.lblSite.TabIndex = 4;
+            this.lblSite.Text = "Project site:";
+            // 
             // About
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(486, 229);
+            this.ClientSize = new System.Drawing.Size(293, 229);
+            this.Controls.Add(this.lblSite);
             this.Controls.Add(this.cmdClose);
             this.Controls.Add(this.lnkProjectPage);
             this.Controls.Add(this.lblVer);
             this.Controls.Add(this.lblTitle);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "About";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
@@ -102,5 +115,6 @@
         private System.Windows.Forms.Label lblVer;
         private System.Windows.Forms.LinkLabel lnkProjectPage;
         private System.Windows.Forms.Button cmdClose;
+        private System.Windows.Forms.Label lblSite;
     }
 }

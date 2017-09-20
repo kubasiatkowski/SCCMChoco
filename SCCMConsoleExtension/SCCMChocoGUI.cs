@@ -22,6 +22,7 @@ namespace SCCMConsoleExtension
             InitializeComponent();
             REGHelper regHelper = new REGHelper();
             
+            //read last server used by SCCM console
             cmServerName = regHelper.read("cmServerName");
             if (cmServerName == null)
             {
@@ -31,6 +32,10 @@ namespace SCCMConsoleExtension
             updateStatusBar();               
         }
 
+        //connect to SCCM and show connection status 
+        //ToDo
+        //-rename to be more meaningful
+        //-error handling
         public void updateStatusBar()
         {
             REGHelper regHelper = new REGHelper();
@@ -46,7 +51,7 @@ namespace SCCMConsoleExtension
             }
         }
 
-
+        //search packages in public Chocolatey repository
         private void cmdSearch_Click(object sender, EventArgs e)
         {
             var srChoco = new srChocolatey.FeedContext_x0060_1(new System.Uri("https://chocolatey.org/api/v2"));
@@ -64,11 +69,19 @@ namespace SCCMConsoleExtension
             stulblStatus.Text = "Found: " + i + " packages";
         }
 
+        //show details of selected package
+        //ToDo:
+        //-better handling of icons which cannot be displayed (broken URL, SVG files, etc.)
         private void dgdSearchResults_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             DataGridView dgv = (DataGridView)sender;
+            //highlight full row
             dgv.Rows[dgv.SelectedCells[0].RowIndex].Selected = true;
+
+            //get package object
             package = (srChocolatey.V2FeedPackage)dgv.Rows[dgv.SelectedCells[0].RowIndex].Cells[3].Value;
+
+            //display basic package details
             cmdAddToSCCM.Enabled = true;
             lblPackageName.Text = package.Title;
             rtfPackageInfo.Text = "Version: " + package.Version + Environment.NewLine;
@@ -78,7 +91,11 @@ namespace SCCMConsoleExtension
             {
                 picIcon.LoadAsync(package.IconUrl);
             }
-            catch { }
+            catch {
+               // picIcon.Image = (Image)(Properties.Resources.ResourceManager.GetObject("SCCMChoco.ico"));
+            }
+
+            //show all metadata
             rtfPackageDetails.Clear();
             rtfPackageDetails.DeselectAll();
            
@@ -92,6 +109,7 @@ namespace SCCMConsoleExtension
 
         }
 
+        //initiate search by pressing "enter"
         private void txtSearch_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -100,32 +118,47 @@ namespace SCCMConsoleExtension
             }
         }
 
+        //show settings dialog
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Settings s = new Settings();
             s.FormClosing += new FormClosingEventHandler(settingsToolStripMenuItem_FormClosing);
             s.Show();
         }
+
+        //update status when closing settings dialog
         private void settingsToolStripMenuItem_FormClosing(object sender, EventArgs e)
         {
             this.updateStatusBar();
         }
-
+        //exit applicaion
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
+        //show about dialog
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             About a = new About();
-            a.FormClosing += new FormClosingEventHandler(settingsToolStripMenuItem_FormClosing);
             a.Show();
         }
 
+        //add application o SCCM
         private void cmdAddToSCCM_Click(object sender, EventArgs e)
         {
-            sccmWrapper.AddApplication(package.Title, package.Description);
+            //ToDo
+            //-better progress display
+            //-do something with exceptions
+            try
+            {
+                sccmWrapper.AddApplication(package);
+            }
+            catch
+            {
+
+            }
+            stulblStatus.Text = package.Title + " added to SCCM";
         }
     }
 }
